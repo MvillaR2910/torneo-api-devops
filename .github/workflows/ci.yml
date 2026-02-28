@@ -27,6 +27,7 @@ jobs:
           --health-retries=5
 
     env:
+      DATABASE_URL: postgresql://torneo_test_user:torneo_test_pass@localhost:5433/torneo_test_db
       DATABASE_URL_TEST: postgresql://torneo_test_user:torneo_test_pass@localhost:5433/torneo_test_db
 
     steps:
