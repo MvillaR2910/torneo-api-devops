@@ -26,8 +26,8 @@ def override_get_db():
         db.close()
 
 
-@pytest.fixture(scope="session", autouse=True)
-def prepare_test_database():
+@pytest.fixture(autouse=True)
+def clean_database():
     Base.metadata.drop_all(bind=engine_test)
     Base.metadata.create_all(bind=engine_test)
     yield
