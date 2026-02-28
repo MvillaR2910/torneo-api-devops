@@ -15,5 +15,19 @@ class EquipoOut(BaseModel):
     ciudad: Optional[str] = None
     entrenador: Optional[str] = None
 
+class JugadorCreate(BaseModel):
+    nombre: str
+    posicion: str | None = None
+    numero: int | None = None
+    equipo_id: int
+
+
+class JugadorOut(BaseModel):
+    id: int
+    nombre: str
+    posicion: str | None = None
+    numero: int | None = None
+    equipo_id: int
+
     class Config:
         from_attributes = True
