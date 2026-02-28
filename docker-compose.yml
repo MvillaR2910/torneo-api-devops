@@ -11,5 +11,19 @@ services:
     volumes:
       - torneo_pgdata:/var/lib/postgresql/data
 
+  db_test:
+    image: postgres:16
+    container_name: torneo_db_test
+    environment:
+      POSTGRES_USER: torneo_test_user
+      POSTGRES_PASSWORD: torneo_test_pass
+      POSTGRES_DB: torneo_test_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - torneo_pgdata_test:/var/lib/postgresql/data
+
+
 volumes:
   torneo_pgdata:
+  torneo_pgdata_test:
