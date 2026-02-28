@@ -9,7 +9,7 @@ router = APIRouter()
 
 @router.post("/", response_model=schemas.JugadorOut)
 def crear_jugador(payload: schemas.JugadorCreate, db: Session = Depends(get_db)):
-    jugador = models.Jugador(**payload.dict())
+    jugador = models.Jugador(**payload.model_dump())
     db.add(jugador)
     db.commit()
     db.refresh(jugador)

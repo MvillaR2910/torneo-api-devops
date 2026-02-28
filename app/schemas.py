@@ -1,7 +1,8 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from typing import Optional
 from datetime import datetime
 
+model_config = ConfigDict(from_attributes=True)
 
 class EquipoCreate(BaseModel):
     nombre: str
@@ -29,5 +30,4 @@ class JugadorOut(BaseModel):
     numero: int | None = None
     equipo_id: int
 
-    class Config:
-        from_attributes = True
+    
