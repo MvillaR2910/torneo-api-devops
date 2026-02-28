@@ -1,0 +1,15 @@
+services:
+  db:
+    image: postgres:16
+    container_name: torneo_db
+    environment:
+      POSTGRES_USER: torneo_user
+      POSTGRES_PASSWORD: torneo_pass
+      POSTGRES_DB: torneo_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - torneo_pgdata:/var/lib/postgresql/data
+
+volumes:
+  torneo_pgdata:
