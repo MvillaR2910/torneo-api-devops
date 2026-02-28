@@ -30,4 +30,22 @@ class JugadorOut(BaseModel):
     numero: int | None = None
     equipo_id: int
 
+class PartidoCreate(BaseModel):
+    fecha: datetime
+    equipo_local_id: int
+    equipo_visitante_id: int
+    goles_local: int | None = None
+    goles_visitante: int | None = None
+    estado: str
+
+
+class PartidoOut(BaseModel):
+    id: int
+    fecha: datetime
+    equipo_local_id: int
+    equipo_visitante_id: int
+    goles_local: int | None = None
+    goles_visitante: int | None = None
+    estado: str
+
     
