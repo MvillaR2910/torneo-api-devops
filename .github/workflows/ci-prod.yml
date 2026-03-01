@@ -1,0 +1,51 @@
+name: CI Production Environment
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  test-and-deploy:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: torneo_test_user
+          POSTGRES_PASSWORD: torneo_test_pass
+          POSTGRES_DB: torneo_test_db
+        ports:
+          - 5433:5432
+        options: >-
+          --health-cmd="pg_isready -U torneo_test_user"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    env:
+      DATABASE_URL: postgresql://torneo_test_user:torneo_test_pass@localhost:5433/torneo_test_db
+      DATABASE_URL_TEST: postgresql://torneo_test_user:torneo_test_pass@localhost:5433/torneo_test_db
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run tests with coverage (>=85%)
+        run: |
+          pytest --cov=app --cov-fail-under=85
+
+      - name: Deploy to Render Production
+        if: success()
+        run: curl -X POST ${{ secrets.RENDER_PROD_HOOK }}
