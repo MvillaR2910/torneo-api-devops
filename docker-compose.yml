@@ -23,6 +23,15 @@ services:
     volumes:
       - torneo_pgdata_test:/var/lib/postgresql/data
 
+  api:
+    build: .
+    container_name: torneo_api
+    environment:
+      DATABASE_URL: postgresql://torneo_user:torneo_pass@db:5432/torneo_db
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
 
 volumes:
   torneo_pgdata:
