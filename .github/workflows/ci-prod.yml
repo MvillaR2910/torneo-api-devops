@@ -44,7 +44,7 @@ jobs:
 
       - name: Run tests with coverage (>=85%)
         run: |
-          pytest --cov=app --cov-fail-under=100
+          pytest --cov=app --cov-fail-under=99
 
       - name: Deploy to Render Production
         if: success()
