@@ -62,3 +62,24 @@ def eliminar_partido(partido_id: int, db: Session = Depends(get_db)):
     db.delete(partido)
     db.commit()
     return {"message": "partido eliminado"}
+
+@router.patch("/{partido_id}", response_model=schemas.PartidoOut)
+def actualizar_parcial_partido(partido_id: int, payload: schemas.PartidoPatch, db: Session = Depends(get_db)):
+    partido = db.query(models.Partido).filter(models.Partido.id == partido_id).first()
+    if not partido:
+        raise HTTPException(status_code=404, detail="partido no encontrado")
+
+    datos = payload.model_dump(exclude_unset=True)
+
+    equipo_local_id = datos.get("equipo_local_id", partido.equipo_local_id)
+    equipo_visitante_id = datos.get("equipo_visitante_id", partido.equipo_visitante_id)
+
+    if equipo_local_id == equipo_visitante_id:
+        raise HTTPException(status_code=400, detail="equipo_local_id y equipo_visitante_id no pueden ser iguales")
+
+    for campo, valor in datos.items():
+        setattr(partido, campo, valor)
+
+    db.commit()
+    db.refresh(partido)
+    return partido

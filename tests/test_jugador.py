@@ -75,3 +75,16 @@ def test_eliminar_jugador(client):
 def test_jugador_no_encontrado(client):
     r = client.get("/api/v2/jugadores/999")
     assert r.status_code == 404
+
+def test_actualizar_parcial_jugador(client):
+    equipo_id = crear_equipo(client)
+    r = crear_jugador(client, equipo_id)
+    jugador_id = r.json()["id"]
+
+    r2 = client.patch(f"/api/v2/jugadores/{jugador_id}", json={
+        "numero": 10
+    })
+
+    assert r2.status_code == 200
+    assert r2.json()["numero"] == 10
+    assert r2.json()["nombre"] == "juan perez"

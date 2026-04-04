@@ -58,3 +58,15 @@ def test_eliminar_equipo(client):
 def test_equipo_no_encontrado(client):
     r = client.get("/api/v2/equipos/999")
     assert r.status_code == 404
+
+def test_actualizar_parcial_equipo(client):
+    r = crear_equipo(client)
+    equipo_id = r.json()["id"]
+
+    r2 = client.patch(f"/api/v2/equipos/{equipo_id}", json={
+        "ciudad": "bogota"
+    })
+
+    assert r2.status_code == 200
+    assert r2.json()["ciudad"] == "bogota"
+    assert r2.json()["nombre"] == "nacional"

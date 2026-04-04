@@ -54,3 +54,18 @@ def eliminar_jugador(jugador_id: int, db: Session = Depends(get_db)):
     db.delete(jugador)
     db.commit()
     return {"message": "jugador eliminado"}
+
+@router.patch("/{jugador_id}", response_model=schemas.JugadorOut)
+def actualizar_parcial_jugador(jugador_id: int, payload: schemas.JugadorPatch, db: Session = Depends(get_db)):
+    jugador = db.query(models.Jugador).filter(models.Jugador.id == jugador_id).first()
+    if not jugador:
+        raise HTTPException(status_code=404, detail="jugador no encontrado")
+
+    datos = payload.model_dump(exclude_unset=True)
+
+    for campo, valor in datos.items():
+        setattr(jugador, campo, valor)
+
+    db.commit()
+    db.refresh(jugador)
+    return jugador

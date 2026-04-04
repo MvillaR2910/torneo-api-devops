@@ -38,7 +38,6 @@ class PartidoCreate(BaseModel):
     goles_visitante: int | None = None
     estado: str
 
-
 class PartidoOut(BaseModel):
     id: int
     fecha: datetime
@@ -48,4 +47,23 @@ class PartidoOut(BaseModel):
     goles_visitante: int | None = None
     estado: str
 
-    
+class EquipoPatch(BaseModel):
+    nombre: str | None = None
+    ciudad: str | None = None
+    entrenador: str | None = None
+
+
+class JugadorPatch(BaseModel):
+    equipo_id: int | None = None
+    nombre: str | None = None
+    posicion: str | None = None
+    numero: int | None = None
+
+
+class PartidoPatch(BaseModel):
+    fecha: datetime | None = None
+    equipo_local_id: int | None = None
+    equipo_visitante_id: int | None = None
+    goles_local: int | None = None
+    goles_visitante: int | None = None
+    estado: str | None = None

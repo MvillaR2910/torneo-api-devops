@@ -102,3 +102,34 @@ def test_no_permitir_mismo_equipo_local_y_visitante(client):
 
     r = crear_partido(client, equipo_id, equipo_id)
     assert r.status_code == 400
+
+def test_actualizar_parcial_partido(client):
+    local_id = crear_equipo(client, "equipo a")
+    visitante_id = crear_equipo(client, "equipo b")
+
+    r = crear_partido(client, local_id, visitante_id)
+    partido_id = r.json()["id"]
+
+    r2 = client.patch(f"/api/v2/partidos/{partido_id}", json={
+        "estado": "jugado",
+        "goles_local": 2,
+        "goles_visitante": 1
+    })
+
+    assert r2.status_code == 200
+    assert r2.json()["estado"] == "jugado"
+    assert r2.json()["goles_local"] == 2
+    assert r2.json()["goles_visitante"] == 1
+
+def test_patch_partido_no_permite_mismo_equipo(client):
+    local_id = crear_equipo(client, "equipo a")
+    visitante_id = crear_equipo(client, "equipo b")
+
+    r = crear_partido(client, local_id, visitante_id)
+    partido_id = r.json()["id"]
+
+    r2 = client.patch(f"/api/v2/partidos/{partido_id}", json={
+        "equipo_visitante_id": local_id
+    })
+
+    assert r2.status_code == 400
