@@ -1,5 +1,5 @@
 def crear_equipo(client):
-    r = client.post("/equipos/", json={
+    r = client.post("/api/v2/equipos/", json={
         "nombre": "nacional",
         "ciudad": "medellin",
         "entrenador": "x"
@@ -8,7 +8,7 @@ def crear_equipo(client):
 
 
 def crear_jugador(client, equipo_id: int):
-    return client.post("/jugadores/", json={
+    return client.post("/api/v2/jugadores/", json={
         "equipo_id": equipo_id,
         "nombre": "juan perez",
         "posicion": "delantero",
@@ -29,7 +29,7 @@ def test_listar_jugadores(client):
     equipo_id = crear_equipo(client)
     crear_jugador(client, equipo_id)
 
-    r = client.get("/jugadores/")
+    r = client.get("/api/v2/jugadores/")
     assert r.status_code == 200
     assert len(r.json()) == 1
 
@@ -39,7 +39,7 @@ def test_obtener_jugador_por_id(client):
     r = crear_jugador(client, equipo_id)
     jugador_id = r.json()["id"]
 
-    r2 = client.get(f"/jugadores/{jugador_id}")
+    r2 = client.get(f"/api/v2/jugadores/{jugador_id}")
     assert r2.status_code == 200
     assert r2.json()["id"] == jugador_id
 
@@ -49,7 +49,7 @@ def test_actualizar_jugador(client):
     r = crear_jugador(client, equipo_id)
     jugador_id = r.json()["id"]
 
-    r2 = client.put(f"/jugadores/{jugador_id}", json={
+    r2 = client.put(f"/api/v2/jugadores/{jugador_id}", json={
         "equipo_id": equipo_id,
         "nombre": "carlos",
         "posicion": "defensa",
@@ -65,13 +65,13 @@ def test_eliminar_jugador(client):
     r = crear_jugador(client, equipo_id)
     jugador_id = r.json()["id"]
 
-    r2 = client.delete(f"/jugadores/{jugador_id}")
+    r2 = client.delete(f"/api/v2/jugadores/{jugador_id}")
     assert r2.status_code == 200
 
-    r3 = client.get(f"/jugadores/{jugador_id}")
+    r3 = client.get(f"/api/v2/jugadores/{jugador_id}")
     assert r3.status_code == 404
 
 
 def test_jugador_no_encontrado(client):
-    r = client.get("/jugadores/999")
+    r = client.get("/api/v2/jugadores/999")
     assert r.status_code == 404

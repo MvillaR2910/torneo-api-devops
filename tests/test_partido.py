@@ -1,5 +1,5 @@
 def crear_equipo(client, nombre: str):
-    r = client.post("/equipos/", json={
+    r = client.post("/api/v2/equipos/", json={
         "nombre": nombre,
         "ciudad": "x",
         "entrenador": "y"
@@ -18,7 +18,7 @@ def crear_partido(client, local_id: int, visitante_id: int, payload_extra=None):
     }
     if payload_extra:
         payload.update(payload_extra)
-    return client.post("/partidos/", json=payload)
+    return client.post("/api/v2/partidos/", json=payload)
 
 
 def test_crear_partido(client):
@@ -40,7 +40,7 @@ def test_listar_partidos(client):
     visitante_id = crear_equipo(client, "equipo b")
     crear_partido(client, local_id, visitante_id)
 
-    r = client.get("/partidos/")
+    r = client.get("/api/v2/partidos/")
     assert r.status_code == 200
     assert len(r.json()) == 1
 
@@ -52,7 +52,7 @@ def test_obtener_partido_por_id(client):
     r = crear_partido(client, local_id, visitante_id)
     partido_id = r.json()["id"]
 
-    r2 = client.get(f"/partidos/{partido_id}")
+    r2 = client.get(f"/api/v2/partidos/{partido_id}")
     assert r2.status_code == 200
     assert r2.json()["id"] == partido_id
 
@@ -64,7 +64,7 @@ def test_actualizar_partido(client):
     r = crear_partido(client, local_id, visitante_id)
     partido_id = r.json()["id"]
 
-    r2 = client.put(f"/partidos/{partido_id}", json={
+    r2 = client.put(f"/api/v2/partidos/{partido_id}", json={
         "fecha": "2026-03-01T18:30:00",
         "equipo_local_id": local_id,
         "equipo_visitante_id": visitante_id,
@@ -85,15 +85,15 @@ def test_eliminar_partido(client):
     r = crear_partido(client, local_id, visitante_id)
     partido_id = r.json()["id"]
 
-    r2 = client.delete(f"/partidos/{partido_id}")
+    r2 = client.delete(f"/api/v2/partidos/{partido_id}")
     assert r2.status_code == 200
 
-    r3 = client.get(f"/partidos/{partido_id}")
+    r3 = client.get(f"/api/v2/partidos/{partido_id}")
     assert r3.status_code == 404
 
 
 def test_partido_no_encontrado(client):
-    r = client.get("/partidos/999")
+    r = client.get("/api/v2/partidos/999")
     assert r.status_code == 404
 
 

@@ -3,13 +3,13 @@ from app.database import Base, engine
 from app import models
 from app.routers import equipo, jugador, partido
 
-app = FastAPI(title="torneo api")
+app = FastAPI(title="torneo api v2")
 Base.metadata.create_all(bind=engine)
 
 @app.get("/")
 def root():
-    return {"message": "api torneo funcionando"}
+    return {"message": "api torneo v2 funcionando"}
 
-app.include_router(equipo.router, prefix="/equipos", tags=["equipos"])
-app.include_router(jugador.router, prefix="/jugadores", tags=["jugadores"])
-app.include_router(partido.router, prefix="/partidos", tags=["partidos"])
+app.include_router(equipo.router, prefix="/api/v2/equipos", tags=["equipos v2"])
+app.include_router(jugador.router, prefix="/api/v2/jugadores", tags=["jugadores v2"])
+app.include_router(partido.router, prefix="/api/v2/partidos", tags=["partidos v2"])
