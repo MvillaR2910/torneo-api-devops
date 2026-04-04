@@ -67,3 +67,17 @@ class PartidoPatch(BaseModel):
     goles_local: int | None = None
     goles_visitante: int | None = None
     estado: str | None = None
+
+class IntegracionCreate(BaseModel):
+    contenido: dict
+
+
+class IntegracionOut(BaseModel):
+    id: int
+    contenido: dict
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class IntegracionPatch(BaseModel):
+    contenido: dict | None = None
