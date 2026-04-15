@@ -1,7 +1,7 @@
 import requests
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-
+from app.metrics_store import registrar_evento
 from app.database import get_db
 from app import models, schemas
 
@@ -10,6 +10,7 @@ router = APIRouter()
 
 @router.post("/", response_model=schemas.IntegracionOut)
 def crear_integracion(payload: schemas.IntegracionCreate, db: Session = Depends(get_db)):
+    registrar_evento("Creación De Integracion")
     contenido = {
         "meta": {
             "antes": payload.meta.origen,
@@ -54,11 +55,13 @@ def crear_integracion(payload: schemas.IntegracionCreate, db: Session = Depends(
 
 @router.get("/", response_model=list[schemas.IntegracionOut])
 def listar_integraciones(db: Session = Depends(get_db)):
+    registrar_evento("Listar Integraciones")
     return db.query(models.Integracion).all()
 
 
 @router.get("/{integracion_id}", response_model=schemas.IntegracionOut)
 def obtener_integracion(integracion_id: int, db: Session = Depends(get_db)):
+    registrar_evento("Mostrar Integración Por Id")
     integracion = db.query(models.Integracion).filter(models.Integracion.id == integracion_id).first()
     if not integracion:
         raise HTTPException(status_code=404, detail="integracion no encontrada")
@@ -67,6 +70,7 @@ def obtener_integracion(integracion_id: int, db: Session = Depends(get_db)):
 
 @router.put("/{integracion_id}", response_model=schemas.IntegracionOut)
 def actualizar_integracion(integracion_id: int, payload: schemas.IntegracionCreate, db: Session = Depends(get_db)):
+    registrar_evento("Actualizar Información De Integracion")
     integracion = db.query(models.Integracion).filter(models.Integracion.id == integracion_id).first()
     if not integracion:
         raise HTTPException(status_code=404, detail="integracion no encontrada")
@@ -113,6 +117,7 @@ def actualizar_integracion(integracion_id: int, payload: schemas.IntegracionCrea
 
 @router.patch("/{integracion_id}", response_model=schemas.IntegracionOut)
 def actualizar_parcial_integracion(integracion_id: int, payload: schemas.IntegracionPatch, db: Session = Depends(get_db)):
+    registrar_evento("Actualización Parcial De Integración")
     integracion = db.query(models.Integracion).filter(models.Integracion.id == integracion_id).first()
     if not integracion:
         raise HTTPException(status_code=404, detail="integracion no encontrada")
@@ -128,6 +133,7 @@ def actualizar_parcial_integracion(integracion_id: int, payload: schemas.Integra
 
 @router.post("/forward")
 def reenviar_a_otra_api(payload: schemas.ForwardRequest):
+    registrar_evento("Envio De Data A Otra Api")
     try:
         response = requests.post(
             payload.url_destino,
