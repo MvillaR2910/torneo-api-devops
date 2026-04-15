@@ -90,3 +90,8 @@ class IntegracionOut(BaseModel):
 
 class IntegracionPatch(BaseModel):
     contenido: dict | None = None
+
+class ForwardRequest(BaseModel):
+    url_destino: str
+    body: dict
+    headers: dict | None = None

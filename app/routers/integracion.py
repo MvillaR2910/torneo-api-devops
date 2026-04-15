@@ -1,3 +1,4 @@
+import requests
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
@@ -124,3 +125,28 @@ def actualizar_parcial_integracion(integracion_id: int, payload: schemas.Integra
     db.commit()
     db.refresh(integracion)
     return integracion
+
+@router.post("/forward")
+def reenviar_a_otra_api(payload: schemas.ForwardRequest):
+    try:
+        response = requests.post(
+            payload.url_destino,
+            json=payload.body,
+            headers=payload.headers if payload.headers else {},
+            timeout=10
+        )
+
+        try:
+            respuesta_json = response.json()
+        except ValueError:
+            respuesta_json = {"respuesta_texto": response.text}
+
+        return {
+            "mensaje": "json reenviado correctamente",
+            "status_code_destino": response.status_code,
+            "url_destino": payload.url_destino,
+            "respuesta_destino": respuesta_json
+        }
+
+    except requests.RequestException as e:
+        raise HTTPException(status_code=500, detail=f"error reenviando a la api destino: {str(e)}")
