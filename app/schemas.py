@@ -1,5 +1,5 @@
 from pydantic import BaseModel, ConfigDict
-from typing import Optional
+from typing import Optional, Any
 from datetime import datetime
 
 model_config = ConfigDict(from_attributes=True)
@@ -68,16 +68,25 @@ class PartidoPatch(BaseModel):
     goles_visitante: int | None = None
     estado: str | None = None
 
-class IntegracionCreate(BaseModel):
-    contenido: dict
+class IntegracionMeta(BaseModel):
+    antes: str | None = None
+    origen: str
+    siguiente: str | None = None
 
+class IntegracionPayload(BaseModel):
+    geografia: dict[str, Any] | None = None
+    soporte: dict[str, Any] | None = None
+    futbol: dict[str, Any] | None = None
+
+class IntegracionCreate(BaseModel):
+    meta: IntegracionMeta
+    payload: IntegracionPayload
 
 class IntegracionOut(BaseModel):
     id: int
     contenido: dict
 
     model_config = ConfigDict(from_attributes=True)
-
 
 class IntegracionPatch(BaseModel):
     contenido: dict | None = None

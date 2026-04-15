@@ -9,35 +9,40 @@ router = APIRouter()
 
 @router.post("/", response_model=schemas.IntegracionOut)
 def crear_integracion(payload: schemas.IntegracionCreate, db: Session = Depends(get_db)):
-    contenido = payload.contenido.copy()
-
-    payload_data = contenido.get("payload", {})
-
-    payload_data["equipo"] = {
-        "id": 1,
-        "nombre": "nacional",
-        "ciudad": "medellin",
-        "entrenador": "autuori"
+    contenido = {
+        "meta": {
+            "antes": payload.meta.origen,
+            "origen": "aws-futbol-api",
+            "siguiente": None
+        },
+        "payload": {
+            "geografia": payload.payload.geografia if payload.payload.geografia else {},
+            "soporte": payload.payload.soporte if payload.payload.soporte else {},
+            "futbol": {
+                "equipo": {
+                    "id": 1,
+                    "nombre": "nacional",
+                    "ciudad": "medellin",
+                    "entrenador": "autuori"
+                },
+                "jugador": {
+                    "id": 1,
+                    "equipo_id": 1,
+                    "nombre": "juan perez",
+                    "posicion": "delantero",
+                    "numero": 9
+                },
+                "partido": {
+                    "id": 1,
+                    "equipo_local_id": 1,
+                    "equipo_visitante_id": 2,
+                    "goles_local": None,
+                    "goles_visitante": None,
+                    "estado": "programado"
+                }
+            }
+        }
     }
-
-    payload_data["jugador"] = {
-        "id": 1,
-        "equipo_id": 1,
-        "nombre": "juan perez",
-        "posicion": "delantero",
-        "numero": 9
-    }
-
-    payload_data["partido"] = {
-        "id": 1,
-        "equipo_local_id": 1,
-        "equipo_visitante_id": 2,
-        "goles_local": None,
-        "goles_visitante": None,
-        "estado": "programado"
-    }
-
-    contenido["payload"] = payload_data
 
     integracion = models.Integracion(contenido=contenido)
     db.add(integracion)
@@ -65,7 +70,41 @@ def actualizar_integracion(integracion_id: int, payload: schemas.IntegracionCrea
     if not integracion:
         raise HTTPException(status_code=404, detail="integracion no encontrada")
 
-    integracion.contenido = payload.contenido
+    integracion.contenido = {
+        "meta": {
+            "antes": payload.meta.origen,
+            "origen": "aws-futbol-api",
+            "siguiente": None
+        },
+        "payload": {
+            "geografia": payload.payload.geografia if payload.payload.geografia else {},
+            "soporte": payload.payload.soporte if payload.payload.soporte else {},
+            "futbol": {
+                "equipo": {
+                    "id": 1,
+                    "nombre": "nacional",
+                    "ciudad": "medellin",
+                    "entrenador": "autuori"
+                },
+                "jugador": {
+                    "id": 1,
+                    "equipo_id": 1,
+                    "nombre": "juan perez",
+                    "posicion": "delantero",
+                    "numero": 9
+                },
+                "partido": {
+                    "id": 1,
+                    "equipo_local_id": 1,
+                    "equipo_visitante_id": 2,
+                    "goles_local": None,
+                    "goles_visitante": None,
+                    "estado": "programado"
+                }
+            }
+        }
+    }
+
     db.commit()
     db.refresh(integracion)
     return integracion
