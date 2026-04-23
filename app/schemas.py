@@ -95,3 +95,48 @@ class ForwardRequest(BaseModel):
     url_destino: str
     body: dict
     headers: dict | None = None
+
+
+class FutbolEquipoInput(BaseModel):
+    id: int
+    nombre: str
+    ciudad: str | None = None
+    entrenador: str | None = None
+
+
+class FutbolJugadorInput(BaseModel):
+    id: int
+    equipo_id: int
+    nombre: str
+    posicion: str | None = None
+    numero: int | None = None
+
+
+class FutbolPartidoInput(BaseModel):
+    id: int
+    equipo_local_id: int
+    equipo_visitante_id: int
+    goles_local: int | None = None
+    goles_visitante: int | None = None
+    estado: str
+
+
+class IntegracionRecibidaRequest(BaseModel):
+    meta: dict[str, Any] | None = None
+    trace_id: str
+    payload: dict[str, Any]
+
+
+class IntegracionCompletarRequest(BaseModel):
+    integracion_id: int | None = None
+    trace_id: str | None = None
+    equipo: FutbolEquipoInput
+    jugador: FutbolJugadorInput
+    partido: FutbolPartidoInput
+
+
+class ActualizarDestinoRequest(BaseModel):
+    integracion_id: int | None = None
+    trace_id: str | None = None
+    url_destino: str
+    headers: dict[str, str] | None = None
