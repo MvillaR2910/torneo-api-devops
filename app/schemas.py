@@ -97,6 +97,13 @@ class ForwardRequest(BaseModel):
     headers: dict | None = None
 
 
+class ForwardPatchByIdRequest(BaseModel):
+    url_destino: str
+    id_destino: int
+    body: dict
+    headers: dict[str, str] | None = None
+
+
 class FutbolEquipoInput(BaseModel):
     id: int
     nombre: str
