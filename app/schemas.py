@@ -154,3 +154,6 @@ class HealthCheckOut(BaseModel):
     status: str
     version: str
     fecha_despliegue: str
+    deploy_date: str | None = None
+    features_preview: list[str] | None = None
+    modified_by: str | None = None

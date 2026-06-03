@@ -3,7 +3,7 @@ from app.database import Base, engine
 from app import models
 from app.routers import equipo, jugador, partido, integracion, metricas, health
 
-app = FastAPI(title="torneo api v2")
+app = FastAPI(title="torneo api v2 | canary-ready")
 Base.metadata.create_all(bind=engine)
 
 @app.get("/")
