@@ -146,6 +146,74 @@ curl http://torneo-api.local/health
 
 Run it several times and check whether the response comes from stable or canary.
 
+## Validation URL
+
+The URL used to validate the canary strategy is:
+
+```text
+http://torneo-api.local/health
+```
+
+This single URL is shared by both versions through Ingress traffic distribution.
+
+## Validation with Postman
+
+You can validate the strategy with Postman, even when running everything locally.
+
+### Request configuration
+
+- Method: `GET`
+- URL: `http://torneo-api.local/health`
+
+### Expected behavior
+
+When you send the same request multiple times:
+
+- some responses should come from the stable deployment
+- some responses should come from the canary deployment
+
+### Stable example
+
+```json
+{
+  "api": "torneo-api",
+  "status": "stable",
+  "version": "2.1.2"
+}
+```
+
+### Canary example
+
+```json
+{
+  "api": "torneo-api",
+  "status": "canary",
+  "version": "2.2.0"
+}
+```
+
+## Monitoring the redirection strategy
+
+The simplest way to monitor the strategy is by inspecting the response body returned by `/health`.
+
+The fields used to identify which version answered are:
+
+- `status`
+- `version`
+
+Because the canary ingress was configured with a weight of `20`, the expected result is:
+
+- most requests return `stable`
+- a smaller portion returns `canary`
+
+### Quick check from PowerShell
+
+```powershell
+1..20 | ForEach-Object { (Invoke-RestMethod http://torneo-api.local/health).status }
+```
+
+This allows you to observe the redirection behavior over multiple requests.
+
 ## Cleanup
 
 ```powershell
