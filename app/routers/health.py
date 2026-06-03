@@ -1,4 +1,3 @@
-import os
 from datetime import datetime
 
 from fastapi import APIRouter
@@ -10,22 +9,15 @@ router = APIRouter()
 
 @router.get("/", response_model=schemas.HealthCheckOut)
 def health_check():
-    deploy_type = os.getenv("DEPLOY_TYPE", "stable")
-    version = os.getenv("APP_VERSION", "2.1.2")
-
-    data = {
+    return {
         "api": "torneo-api",
-        "status": deploy_type,
-        "version": version,
+        "status": "canary",
+        "version": "2.2.0",
         "fecha_despliegue": datetime.now().isoformat(),
-        "modified_by": "Sebastian Ruiz",
-    }
-
-    if deploy_type == "canary":
-        data["deploy_date"] = os.getenv("DEPLOY_DATE", datetime.now().date().isoformat())
-        data["features_preview"] = [
+        "deploy_date": "2026-06-03",
+        "features_preview": [
             "stats-por-equipo-v2",
             "filtro-partidos-por-estado",
-        ]
-
-    return data
+        ],
+        "modified_by": "Sebastian Ruiz",
+    }
