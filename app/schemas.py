@@ -147,3 +147,10 @@ class ActualizarDestinoRequest(BaseModel):
     trace_id: str | None = None
     url_destino: str
     headers: dict[str, str] | None = None
+
+
+class HealthCheckOut(BaseModel):
+    api: str
+    status: str
+    version: str
+    fecha_despliegue: str
