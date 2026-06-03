@@ -58,3 +58,18 @@ def eliminar_equipo(equipo_id: int, db: Session = Depends(get_db)):
     db.delete(equipo)
     db.commit()
     return {"message": "equipo eliminado"}
+
+@router.patch("/{equipo_id}", response_model=schemas.EquipoOut)
+def actualizar_parcial_equipo(equipo_id: int, payload: schemas.EquipoPatch, db: Session = Depends(get_db)):
+    equipo = db.query(models.Equipo).filter(models.Equipo.id == equipo_id).first()
+    if not equipo:
+        raise HTTPException(status_code=404, detail="equipo no encontrado")
+
+    datos = payload.model_dump(exclude_unset=True)
+
+    for campo, valor in datos.items():
+        setattr(equipo, campo, valor)
+
+    db.commit()
+    db.refresh(equipo)
+    return equipo

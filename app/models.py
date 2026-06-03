@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
 from app.database import Base
+from sqlalchemy import JSON
 
 
 class Equipo(Base):
@@ -38,3 +39,9 @@ class Partido(Base):
     goles_local = Column(Integer, nullable=True)
     goles_visitante = Column(Integer, nullable=True)
     estado = Column(String, nullable=False)
+
+class Integracion(Base):
+    __tablename__ = "integracion"
+
+    id = Column(Integer, primary_key=True, index=True)
+    contenido = Column(JSON, nullable=False)
