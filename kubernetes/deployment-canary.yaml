@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: torneo-api-canary
+  namespace: torneo-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: torneo-api
+      track: canary
+  template:
+    metadata:
+      labels:
+        app: torneo-api
+        track: canary
+    spec:
+      containers:
+        - name: torneo-api
+          image: torneo-api:canary
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8000
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: torneo-api-secrets
+                  key: DATABASE_URL
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 20
+            periodSeconds: 15
