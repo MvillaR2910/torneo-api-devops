@@ -6,6 +6,7 @@ API de futbol construida con FastAPI y PostgreSQL. Este proyecto fue desplegado 
 
 - API FastAPI para equipos, jugadores, partidos, integracion y metricas
 - Infraestructura en AWS creada con Terraform
+- Estrategia Canary en Kubernetes para version `stable` y `canary`
 - Scripts SQL para crear tablas, insertar y consultar datos, y eliminar tablas
 - Flujo de prueba por SSH para conectarse a la base de datos y ejecutar scripts manualmente
 
@@ -20,6 +21,124 @@ Dockerfile           imagen de la API
 docker-compose.yml   apoyo local para desarrollo
 requirements.txt     dependencias Python
 ```
+
+## Esquema visual de la infraestructura
+
+### Infraestructura AWS
+
+```text
+Internet
+   |
+   v
++---------------------------+
+|      AWS / Terraform      |
++---------------------------+
+            |
+            v
++---------------------------+
+|            VPC            |
+|       10.0.0.0/16         |
++---------------------------+
+      |               |
+      |               |
+      v               v
++-------------+   +-------------+
+| Public Sub1 |   | Public Sub2 |
+| 10.0.1.0/24 |   | 10.0.2.0/24 |
++-------------+   +-------------+
+      |
+      v
++----------------------+
+|   Internet Gateway   |
++----------------------+
+      |
+      v
++----------------------+
+|     Route Table      |
++----------------------+
+      |
+      v
++----------------------+
+|         EC2          |
+|   API FastAPI/Docker |
+|   SSH por puerto 22  |
+|   App por puerto8000 |
++----------------------+
+      |
+      | acceso permitido por Security Group
+      v
++----------------------+
+|         RDS          |
+|     PostgreSQL       |
+|      puerto 5432     |
++----------------------+
+```
+
+### Estrategia Canary con Kubernetes
+
+```text
+Usuario / Postman / Browser
+           |
+           v
+ http://torneo-api.local/health
+           |
+           v
++-------------------------------+
+|     NGINX Ingress Controller  |
++-------------------------------+
+      |                   |
+      | tráfico principal | tráfico canary (20%)
+      v                   v
++----------------+   +----------------+
+| Service Stable |   | Service Canary |
++----------------+   +----------------+
+      |                   |
+      v                   v
++----------------+   +----------------+
+| Pods Stable    |   | Pods Canary    |
+| status=stable  |   | status=canary  |
++----------------+   +----------------+
+      |                   |
+      v                   v
++----------------+   +----------------+
+| Deployment     |   | Deployment     |
+| Stable         |   | Canary         |
++----------------+   +----------------+
+```
+
+### Flujo resumido
+
+```text
+Cliente
+  -> Ingress
+  -> Service
+  -> Pods
+  -> Contenedor FastAPI
+  -> Base de datos PostgreSQL
+```
+
+## Resumen de la estrategia Canary
+
+Para la distribucion de trafico se implemento una estrategia `Canary Deployment` con Kubernetes:
+
+- dos deployments
+- dos versiones de pods
+- dos services internos
+- un acceso comun por Ingress
+- redireccion de trafico usando NGINX Ingress
+
+La validacion se realiza en:
+
+```text
+http://torneo-api.local/health
+```
+
+La respuesta del endpoint permite identificar qué version respondio:
+
+- `stable`
+- `canary`
+
+La documentacion detallada de esta parte se encuentra en [kubernetes/README.md](./kubernetes/README.md).
 
 ## Requisitos previos
 
